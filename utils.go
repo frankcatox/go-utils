@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"hash"
 	"io"
-	"io/ioutil"
 	"math/rand"
 	"net"
 	"net/url"
@@ -74,8 +73,8 @@ func RandomString(size int, charsets ...string) string {
 }
 
 func RandomIP() string {
-	rand.Seed(time.Now().Unix())
-	return fmt.Sprintf("%d.%d.%d.%d", rand.Intn(255), rand.Intn(255), rand.Intn(255), rand.Intn(255))
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	return fmt.Sprintf("%d.%d.%d.%d", r.Intn(255), r.Intn(255), r.Intn(255), r.Intn(255))
 }
 
 func ToBytes(input interface{}) []byte {
@@ -184,22 +183,26 @@ func Bytes2String(b []byte) string {
 
 func ReadFiles(root string) []string {
 	var files []string
-	rd, _ := ioutil.ReadDir(root)
+	rd, _ := os.ReadDir(root)
 	for _, fi := range rd {
 		path := filepath.Join(root, fi.Name())
 		if fi.IsDir() {
 			files = append(files, ReadFiles(path)...)
-		} else if fi.Mode()&os.ModeSymlink != 0 {
-			path, err := os.Readlink(path)
-			if err == nil {
-				if IsDir(path) {
-					files = append(files, ReadFiles(path)...)
-				} else {
-					files = append(files, path)
-				}
-			}
 		} else {
-			files = append(files, path)
+			info, err := fi.Info()
+			if err == nil && (info.Mode()&os.ModeSymlink != 0) {
+				path, err := os.Readlink(path)
+				if err == nil {
+					if IsDir(path) {
+						files = append(files, ReadFiles(path)...)
+					} else {
+						files = append(files, path)
+					}
+				}
+
+			} else {
+				files = append(files, path)
+			}
 		}
 	}
 	return files
