@@ -20,7 +20,25 @@ func PKCSUnPadding(srcBytes []byte) []byte {
 	return srcBytes[:(length - unpadding)]
 }
 
-func AesCbcEnc(src, key, iv interface{}) ([]byte, error) {
+func XorEnc(src any, seed int) []byte {
+	srcBytes := ToBytes(src)
+	encrypted := make([]byte, len(srcBytes))
+	for i, v := range srcBytes {
+		encrypted[i] = v ^ (uint8(seed))
+	}
+	return encrypted
+}
+
+func XorEncStr(src string, seed int) string {
+	return base64.StdEncoding.EncodeToString(XorEnc(src, seed))
+}
+
+func XorDecStr(src string, seed int) string {
+	enc, _ := base64.StdEncoding.DecodeString(src)
+	return ToString(XorEnc(enc, seed))
+}
+
+func AesCbcEnc(src, key, iv any) ([]byte, error) {
 	block, err := aes.NewCipher(ToBytes(key))
 	if err != nil {
 		return nil, err
@@ -33,7 +51,7 @@ func AesCbcEnc(src, key, iv interface{}) ([]byte, error) {
 	return encrypted, nil
 }
 
-func AesCbcDec(src, key, iv interface{}) ([]byte, error) {
+func AesCbcDec(src, key, iv any) ([]byte, error) {
 	block, err := aes.NewCipher(ToBytes(key))
 	if err != nil {
 		return nil, err
@@ -46,7 +64,7 @@ func AesCbcDec(src, key, iv interface{}) ([]byte, error) {
 	return decrypted, nil
 }
 
-func AesCfbEnc(src, key, iv interface{}) ([]byte, error) {
+func AesCfbEnc(src, key, iv any) ([]byte, error) {
 	block, err := aes.NewCipher(ToBytes(key))
 	if err != nil {
 		return nil, err
@@ -58,7 +76,7 @@ func AesCfbEnc(src, key, iv interface{}) ([]byte, error) {
 	return encrypted, nil
 }
 
-func AesCfbDec(src, key, iv interface{}) ([]byte, error) {
+func AesCfbDec(src, key, iv any) ([]byte, error) {
 	block, err := aes.NewCipher(ToBytes(key))
 	if err != nil {
 		return nil, err
@@ -70,7 +88,7 @@ func AesCfbDec(src, key, iv interface{}) ([]byte, error) {
 	return decrypted, nil
 }
 
-func DesEnc(src, key, iv interface{}) ([]byte, error) {
+func DesEnc(src, key, iv any) ([]byte, error) {
 	block, err := des.NewCipher(ToBytes(key))
 	if err != nil {
 		return nil, err
@@ -83,7 +101,7 @@ func DesEnc(src, key, iv interface{}) ([]byte, error) {
 	return encrypted, nil
 }
 
-func DesDec(src, key, iv interface{}) ([]byte, error) {
+func DesDec(src, key, iv any) ([]byte, error) {
 	block, err := des.NewCipher(ToBytes(key))
 	if err != nil {
 		return nil, err

@@ -24,7 +24,7 @@ import (
 	"github.com/super-l/machine-code/machine"
 )
 
-func FuncName(f interface{}) string {
+func FuncName(f any) string {
 	return runtime.FuncForPC(reflect.ValueOf(f).Pointer()).Name()
 }
 
@@ -77,7 +77,7 @@ func RandomIP() string {
 	return fmt.Sprintf("%d.%d.%d.%d", r.Intn(255), r.Intn(255), r.Intn(255), r.Intn(255))
 }
 
-func ToBytes(input interface{}) []byte {
+func ToBytes(input any) []byte {
 	switch input.(type) {
 	case string:
 		return []byte(input.(string))
@@ -88,7 +88,7 @@ func ToBytes(input interface{}) []byte {
 	}
 }
 
-func ToString(input interface{}) string {
+func ToString(input any) string {
 	switch input.(type) {
 	case string:
 		return input.(string)
@@ -99,12 +99,12 @@ func ToString(input interface{}) string {
 	}
 }
 
-func Md5(input interface{}) string {
+func Md5(input any) string {
 	bytes := md5.Sum(ToBytes(input))
 	return hex.EncodeToString(bytes[:])
 }
 
-func Sha1(input interface{}) string {
+func Sha1(input any) string {
 	bytes := sha1.Sum(ToBytes(input))
 	return hex.EncodeToString(bytes[:])
 }

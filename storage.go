@@ -14,8 +14,8 @@ type Storage struct {
 }
 
 type item struct {
-	v interface{} // val
-	e uint64      // exp
+	v any    // val
+	e uint64 // exp
 }
 
 // NewStorage return new storage
@@ -30,7 +30,7 @@ func NewStorage() *Storage {
 }
 
 // Get value by key
-func (s *Storage) Get(key string) interface{} {
+func (s *Storage) Get(key string) any {
 	s.RLock()
 	v, ok := s.data[key]
 	s.RUnlock()
@@ -41,7 +41,7 @@ func (s *Storage) Get(key string) interface{} {
 }
 
 // Set key with value
-func (s *Storage) Set(key string, val interface{}, ttl ...time.Duration) {
+func (s *Storage) Set(key string, val any, ttl ...time.Duration) {
 	var exp uint64
 	if len(ttl) > 0 {
 		exp = uint64(ttl[0].Seconds()) + atomic.LoadUint64(&s.ts)
