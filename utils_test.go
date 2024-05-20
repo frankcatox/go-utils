@@ -33,7 +33,9 @@ func TestDesEnc(t *testing.T) {
 }
 
 func TestXor(t *testing.T) {
+    println(XorEncStr("https", 26))
     println(XorEncStr("https://image.zyh365.com/upload/schoolpics/20230420/20230420142539_425.jpg", 26))
+    println(XorEncHex("https://wkphoto.cdn.bcebos.com/d52a2834349b033bf2ca55b805ce36d3d539bd16.jpg", 26))
     println(AesEncStr("https://image.zyh365.com/upload/schoolpics/20230420/20230420142539_425.jpg", "1234567812345678"))
     println(DesEncStr("https://image.zyh365.com/upload/schoolpics/20230420/20230420142539_425.jpg", "12345678"))
 }

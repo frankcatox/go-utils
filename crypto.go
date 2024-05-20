@@ -6,6 +6,7 @@ import (
 	"crypto/cipher"
 	"crypto/des"
 	"encoding/base64"
+	"encoding/hex"
 )
 
 func PKCSPadding(ciphertext []byte, blockSize int) []byte {
@@ -33,8 +34,17 @@ func XorEncStr(src string, seed int) string {
 	return base64.StdEncoding.EncodeToString(XorEnc(src, seed))
 }
 
+func XorEncHex(src string, seed int) string {
+	return hex.EncodeToString(XorEnc(src, seed))
+}
+
 func XorDecStr(src string, seed int) string {
 	enc, _ := base64.StdEncoding.DecodeString(src)
+	return ToString(XorEnc(enc, seed))
+}
+
+func XorDecHex(src string, seed int) string {
+	enc, _ := hex.DecodeString(src)
 	return ToString(XorEnc(enc, seed))
 }
 
@@ -116,26 +126,44 @@ func DesDec(src, key, iv any) ([]byte, error) {
 
 func AesEncStr(src, key string) string {
 	enc, _ := AesCbcEnc([]byte(src), key, key)
-	// return hex.EncodeToString(enc)
 	return base64.StdEncoding.EncodeToString(enc)
 }
 
+func AesEncHex(src, key string) string {
+	enc, _ := AesCbcEnc([]byte(src), key, key)
+	return hex.EncodeToString(enc)
+}
+
 func AesDecStr(src, key string) string {
-	// enc, _ := hex.DecodeString(src)
 	enc, _ := base64.StdEncoding.DecodeString(src)
+	dec, _ := AesCbcDec(enc, key, key)
+	return string(dec)
+}
+
+func AesDesHex(src, key string) string {
+	enc, _ := hex.DecodeString(src)
 	dec, _ := AesCbcDec(enc, key, key)
 	return string(dec)
 }
 
 func DesEncStr(src, key string) string {
 	enc, _ := DesEnc([]byte(src), key, key)
-	// return hex.EncodeToString(enc)
 	return base64.StdEncoding.EncodeToString(enc)
 }
 
+func DesEncHex(src, key string) string {
+	enc, _ := DesEnc([]byte(src), key, key)
+	return hex.EncodeToString(enc)
+}
+
 func DesDecStr(src, key string) string {
-	// enc, _ := hex.DecodeString(src)
 	enc, _ := base64.StdEncoding.DecodeString(src)
+	dec, _ := DesDec(enc, key, key)
+	return string(dec)
+}
+
+func DesDecHex(src, key string) string {
+	enc, _ := hex.DecodeString(src)
 	dec, _ := DesDec(enc, key, key)
 	return string(dec)
 }
